@@ -5,17 +5,41 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.epishie.btradar.Beacon;
 import com.epishie.btradar.R;
+import com.epishie.btradar.presenter.MainPresenter;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String KEY_BEACONS = "BEACONS";
+    private MainPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ArrayList<Beacon> beacons = null;
+        if (savedInstanceState != null) {
+            beacons = savedInstanceState.getParcelableArrayList(KEY_BEACONS);
+        }
+        mPresenter = new MainPresenter(this, beacons);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPresenter.onActivityStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mPresenter.onActivityStop();
+        super.onStop();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -37,5 +61,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(KEY_BEACONS, (ArrayList<Beacon>)mPresenter.getBeacons());
+    }
+
+    public MainPresenter getPresenter() {
+        return mPresenter;
     }
 }

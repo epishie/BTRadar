@@ -12,18 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.epishie.btradar.R;
-import com.epishie.btradar.presenter.MainPresenter;
 
 public class MainFragment extends Fragment {
 
     private Adapter mAdapter;
-    private MainPresenter mPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new Adapter(getChildFragmentManager(), getActivity());
-        mPresenter = new MainPresenter();
     }
 
     @Override
@@ -41,10 +38,6 @@ public class MainFragment extends Fragment {
 
         viewPager.setAdapter(mAdapter);
         tabLayout.setupWithViewPager(viewPager);
-    }
-
-    public MainPresenter getPresenter() {
-        return mPresenter;
     }
 
     private static class Adapter extends FragmentPagerAdapter {

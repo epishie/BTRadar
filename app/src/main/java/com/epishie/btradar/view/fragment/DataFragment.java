@@ -1,5 +1,6 @@
 package com.epishie.btradar.view.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,8 +22,7 @@ public class DataFragment extends BeaconFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mAdapter = new Adapter();
+        mAdapter = new Adapter(getActivity());
     }
 
     @Nullable
@@ -40,9 +40,6 @@ public class DataFragment extends BeaconFragment {
         lm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(lm);
         recyclerView.setAdapter(mAdapter);
-
-        MainFragment parent = (MainFragment)getParentFragment();
-        parent.getPresenter().test();
     }
 
     @Override
@@ -52,7 +49,12 @@ public class DataFragment extends BeaconFragment {
 
     private static class Adapter extends RecyclerView.Adapter<ViewHolder> {
 
+        private final Context mContext;
         private List<Beacon> mBeacons;
+
+        public Adapter(Context context) {
+            mContext = context;
+        }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -65,7 +67,13 @@ public class DataFragment extends BeaconFragment {
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, int i) {
             Beacon beacon = mBeacons.get(i);
-            viewHolder.mIdText.setText(beacon.getId());
+            viewHolder.mIdText.setText(beacon.getUuid());
+            viewHolder.mMajorText.setText(String.valueOf(beacon.getMajor()));
+            viewHolder.mMinorText.setText(String.valueOf(beacon.getMinor()));
+            viewHolder.mRssiText.setText(String.valueOf(beacon.getRssi()));
+            viewHolder.mTxPowerText.setText(String.valueOf(beacon.getTxPower()));
+            viewHolder.mDistanceText.setText(mContext.getResources().
+                    getStringArray(R.array.distances)[beacon.getDistance().ordinal()]);
         }
 
         @Override
@@ -86,10 +94,20 @@ public class DataFragment extends BeaconFragment {
     private static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView mIdText;
+        private final TextView mMajorText;
+        private final TextView mMinorText;
+        private final TextView mRssiText;
+        private final TextView mTxPowerText;
+        private final TextView mDistanceText;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mIdText = (TextView)itemView.findViewById(R.id.beacon_id);
+            mMajorText = (TextView)itemView.findViewById(R.id.beacon_major);
+            mMinorText = (TextView)itemView.findViewById(R.id.beacon_minor);
+            mRssiText = (TextView)itemView.findViewById(R.id.beacon_rssi);
+            mTxPowerText = (TextView)itemView.findViewById(R.id.beacon_tx_power);
+            mDistanceText = (TextView)itemView.findViewById(R.id.beacon_distance);
         }
     }
 }
