@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BT Radar</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="data">Data</string>
+    <string name="radar">Radar</string>
+</resources>
