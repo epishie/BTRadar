@@ -17,13 +17,15 @@ public class BeaconService extends Service {
     private final HashMap<String, WeakReference<BeaconStateListener>> mListeners = new HashMap<>();
 
     private BeaconScanner mBeaconScanner;
-    private int mMonitorcount = 0;
+    private int mMonitorCount = 0;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        mBeaconScanner = new BeaconLollipopScanner(BluetoothAdapter.getDefaultAdapter(), mScannerListener);
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        mBeaconScanner = new BeaconLollipopScanner(adapter, mScannerListener);
+        //mBeaconScanner = new BeaconJellyBeanScanner(adapter, mScannerListener);
     }
 
     @Override
@@ -34,17 +36,17 @@ public class BeaconService extends Service {
     public class ServiceBinder extends Binder {
 
         public void startMonitoring(String id, BeaconStateListener listener) {
-            mListeners.put(id, new WeakReference<BeaconStateListener>(listener));
-            if (mMonitorcount == 0) {
+            mListeners.put(id, new WeakReference<>(listener));
+            if (mMonitorCount == 0) {
                 mBeaconScanner.startScan();
             }
-            mMonitorcount++;
+            mMonitorCount++;
         }
 
         public void stopMonitoring(String id) {
             mListeners.remove(id);
-            mMonitorcount--;
-            if (mMonitorcount == 0) {
+            mMonitorCount--;
+            if (mMonitorCount == 0) {
                 mBeaconScanner.stopScan();
             }
         }
@@ -62,6 +64,6 @@ public class BeaconService extends Service {
     };
 
     public interface BeaconStateListener {
-        public void onStatusUpdate(Beacon beacon);
+       void onStatusUpdate(Beacon beacon);
     }
 }

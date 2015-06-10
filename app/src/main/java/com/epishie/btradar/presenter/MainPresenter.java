@@ -4,7 +4,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 
 import com.epishie.btradar.Beacon;
 import com.epishie.btradar.bluetooth.BeaconService;
@@ -24,8 +26,10 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
     private final Set<BeaconView> mViewSet;
     private BeaconService.ServiceBinder mServiceBinder;
     private boolean mServiceBound;
+    private boolean mMonitoring;
+    private final Handler mHandler;
 
-    private List<Beacon> mBeacons;
+    private final List<Beacon> mBeacons;
     private static final List<String> mUuids = new ArrayList<>(Arrays.asList(
             "B9407F30-F5F8-466E-AFF9-25556B57FE6D",
             "8492E75F-4FD6-469D-B132-043FE94921D8"
@@ -34,6 +38,7 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
     public MainPresenter(Context context, List<Beacon> savedBeacons) {
         mContext = context;
         mViewSet = new HashSet<>();
+        mHandler = new Handler(Looper.getMainLooper());
 
         if (savedBeacons != null) {
             mBeacons = savedBeacons;
@@ -54,6 +59,28 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
     public void onActivityStart() {
         Intent intent = new Intent(mContext, BeaconService.class);
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        synchronized (this) {
+            mMonitoring = true;
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!mMonitoring) {
+                        return;
+                    }
+                    for (int i = 0; i < mBeacons.size(); i++) {
+                        Beacon beacon = mBeacons.get(i);
+                        if (beacon.getLastUpdateTime() == 0) {
+                            continue;
+                        }
+                        long elapsedTime = System.currentTimeMillis() - beacon.getLastUpdateTime();
+                        if (elapsedTime > 10000L) {
+                            mBeacons.set(i, new Beacon.Builder(beacon).create());
+                        }
+                    }
+                    mHandler.postDelayed(this, 1000);
+                }
+            }, 1000);
+        }
     }
 
     public void onActivityStop() {
@@ -61,6 +88,9 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
             mServiceBinder.stopMonitoring(ID);
             mContext.unbindService(mServiceConnection);
             mServiceBound = false;
+        }
+        synchronized (this) {
+            mMonitoring = false;
         }
     }
 
@@ -81,13 +111,15 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
 
     @Override
     public void onStatusUpdate(Beacon beacon) {
-        int i = 0;
-        for (Beacon b : mBeacons) {
-            if (b.equals(beacon)) {
-                mBeacons.set(i, beacon);
-                updateViews();
+        synchronized (this) {
+            int i = 0;
+            for (Beacon b : mBeacons) {
+                if (b.equals(beacon)) {
+                    mBeacons.set(i, beacon);
+                    updateViews();
+                }
+                i++;
             }
-            i++;
         }
     }
 

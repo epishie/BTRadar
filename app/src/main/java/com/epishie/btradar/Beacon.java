@@ -5,30 +5,36 @@ import android.os.Parcelable;
 
 public class Beacon implements Parcelable {
 
+    public static final double UNKNOWN_DISTANCE = -1.0;
+
     private final String mUuid;
     private final int mMajor;
     private final int mMinor;
     private final int mRssi;
     private final int mTxPower;
-    private final Distance mDistance;
+    private final double mDistance;
+    private final Proximity mProximity;
+    private final long mLastUpdateTime;
 
-    protected Beacon(String uuid, int major, int minor, int rssi, int txPower) {
+    private Beacon(String uuid, int major, int minor, int rssi, int txPower) {
         mUuid = uuid;
         mMajor = major;
         mMinor = minor;
         mRssi = rssi;
         mTxPower = txPower;
 
-        double distanceValue = calculateDistance(rssi, txPower);
-        if (distanceValue == -1.0) {
-            mDistance = Distance.UNKNOWN;
-        } else if (distanceValue < 1) {
-            mDistance = Distance.IMMEDIATE;
-        } else if (distanceValue < 3) {
-            mDistance = Distance.NEAR;
+        mDistance = calculateProximity(rssi, txPower);
+        if (mDistance == UNKNOWN_DISTANCE) {
+            mProximity = Proximity.UNKNOWN;
+        } else if (mDistance < 1) {
+            mProximity = Proximity.IMMEDIATE;
+        } else if (mDistance < 3) {
+            mProximity = Proximity.NEAR;
         } else {
-            mDistance = Distance.FAR;
+            mProximity = Proximity.FAR;
         }
+
+        mLastUpdateTime = System.currentTimeMillis();
     }
 
     public Beacon(Parcel parcel) {
@@ -37,7 +43,9 @@ public class Beacon implements Parcelable {
         mMinor = parcel.readInt();
         mTxPower = parcel.readInt();
         mRssi = parcel.readInt();
-        mDistance = Distance.values()[parcel.readInt()];
+        mDistance = parcel.readDouble();
+        mProximity = Proximity.values()[parcel.readInt()];
+        mLastUpdateTime = parcel.readLong();
     }
 
     public String getUuid() {
@@ -60,8 +68,16 @@ public class Beacon implements Parcelable {
         return mTxPower;
     }
 
-    public Distance getDistance() {
+    public double getDistance() {
         return mDistance;
+    }
+
+    public Proximity getProximity() {
+        return mProximity;
+    }
+
+    public long getLastUpdateTime() {
+        return mLastUpdateTime;
     }
 
     @Override
@@ -73,7 +89,7 @@ public class Beacon implements Parcelable {
         return getUuid().equals(otherBeacon.getUuid());
     }
 
-    private static double calculateDistance(int rssi, int txPower) {
+    private static double calculateProximity(int rssi, int txPower) {
         if (rssi == 0) {
             return -1.0; // if we cannot determine accuracy, return -1.
         }
@@ -98,7 +114,9 @@ public class Beacon implements Parcelable {
         dest.writeInt(mMinor);
         dest.writeInt(mTxPower);
         dest.writeInt(mRssi);
-        dest.writeInt(mDistance.ordinal());
+        dest.writeDouble(mDistance);
+        dest.writeInt(mProximity.ordinal());
+        dest.writeLong(mLastUpdateTime);
     }
 
     public static final Parcelable.Creator<Beacon> CREATOR = new Creator<Beacon>() {
@@ -113,7 +131,7 @@ public class Beacon implements Parcelable {
         }
     };
 
-    public enum Distance {
+    public enum Proximity {
         UNKNOWN,
         IMMEDIATE,
         NEAR,
@@ -126,6 +144,14 @@ public class Beacon implements Parcelable {
         private int mMinor;
         private int mRssi;
         private int mTxPower;
+
+        public Builder() {}
+
+        public Builder(Beacon beacon) {
+            mUuid = beacon.getUuid();
+            mMajor = beacon.getMajor();
+            mMinor = beacon.getMinor();
+        }
 
         public void setUuid(String uuid) {
             mUuid = uuid;

@@ -72,8 +72,13 @@ public class DataFragment extends BeaconFragment {
             viewHolder.mMinorText.setText(String.valueOf(beacon.getMinor()));
             viewHolder.mRssiText.setText(String.valueOf(beacon.getRssi()));
             viewHolder.mTxPowerText.setText(String.valueOf(beacon.getTxPower()));
-            viewHolder.mDistanceText.setText(mContext.getResources().
-                    getStringArray(R.array.distances)[beacon.getDistance().ordinal()]);
+            if (beacon.getDistance() == Beacon.UNKNOWN_DISTANCE) {
+                viewHolder.mDistanceText.setText("-");
+            } else {
+                viewHolder.mDistanceText.setText(String.format("%.4f", beacon.getDistance()) + "m");
+            }
+            viewHolder.mProximityText.setText(mContext.getResources().
+                    getStringArray(R.array.proximities)[beacon.getProximity().ordinal()]);
         }
 
         @Override
@@ -99,6 +104,7 @@ public class DataFragment extends BeaconFragment {
         private final TextView mRssiText;
         private final TextView mTxPowerText;
         private final TextView mDistanceText;
+        private final TextView mProximityText;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -108,6 +114,7 @@ public class DataFragment extends BeaconFragment {
             mRssiText = (TextView)itemView.findViewById(R.id.beacon_rssi);
             mTxPowerText = (TextView)itemView.findViewById(R.id.beacon_tx_power);
             mDistanceText = (TextView)itemView.findViewById(R.id.beacon_distance);
+            mProximityText = (TextView)itemView.findViewById(R.id.beacon_proximity);
         }
     }
 }

@@ -8,7 +8,8 @@
     <string name="lbl_major">MAJOR</string>
     <string name="lbl_minor">MINOR</string>
     <string name="lbl_rssi">RSSI</string>
-    <string name="lbl_tx_power">TX Power</string>
+    <string name="lbl_tx_power">TX POWER</string>
+    <string name="lbl_proximity">PROXIMITY</string>
     <string name="lbl_distance">DISTANCE</string>
     <string name="lbl_unknown">Unknown</string>
     <string name="lbl_immediate">Immediate</string>

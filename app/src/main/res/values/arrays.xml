@@ -4,7 +4,7 @@
         <item>@string/tab_data</item>
         <item>@string/tab_radar</item>
     </string-array>
-    <string-array name="distances">
+    <string-array name="proximities">
         <item>@string/lbl_unknown</item>
         <item>@string/lbl_immediate</item>
         <item>@string/lbl_near</item>

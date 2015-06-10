@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
 import android.os.Build;
 import android.os.Handler;
@@ -18,11 +19,10 @@ import java.util.List;
 public class BeaconLollipopScanner extends BeaconScanner {
 
     private BluetoothLeScanner mScanner;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     public BeaconLollipopScanner(BluetoothAdapter adapter, BeaconScannerListener listener) {
         super(adapter, listener);
-        mScanner = mAdapter.getBluetoothLeScanner();
     }
 
     @Override
@@ -31,19 +31,30 @@ public class BeaconLollipopScanner extends BeaconScanner {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mScanner.stopScan(mScanCallback);
+                if (mAdapter.isEnabled()) {
+                    getScanner().stopScan(mScanCallback);
+                }
                 if (mScanning) {
                     startScan();
                 }
             }
         }, SCAN_TIME);
-        mScanner.startScan(mScanCallback);
+        if (mAdapter.isEnabled()) {
+            getScanner().startScan(mScanCallback);
+        }
     }
 
     @Override
     public void stopScan() {
         mScanning = false;
-        mScanner.stopScan(mScanCallback);
+        getScanner().stopScan(mScanCallback);
+    }
+
+    private BluetoothLeScanner getScanner() {
+        if (mScanner == null) {
+            mScanner = mAdapter.getBluetoothLeScanner();
+        }
+        return mScanner;
     }
 
     private final ScanCallback mScanCallback = new ScanCallback() {
@@ -64,9 +75,12 @@ public class BeaconLollipopScanner extends BeaconScanner {
 
         private void processResult(ScanResult result) {
             Log.d("SCAN", "FOUND: " + result.getDevice().getAddress());
-            Beacon beacon = getBeacon(result.getScanRecord().getBytes(), result.getRssi());
-            if (beacon != null) {
-                mListener.onScanUpdate(beacon);
+            ScanRecord record = result.getScanRecord();
+            if (record != null) {
+                Beacon beacon = getBeacon(record.getBytes(), result.getRssi());
+                if (beacon != null) {
+                    mListener.onScanUpdate(beacon);
+                }
             }
         }
     };

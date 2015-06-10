@@ -122,6 +122,25 @@
                     android:textSize="14sp"
                     tools:text="@string/lbl_unknown" />
             </TableRow>
+            <TableRow
+                android:layout_marginTop="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_horizontal_default"
+                    android:layout_marginEnd="@dimen/margin_horizontal_default"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:text="@string/lbl_proximity" />
+                <TextView
+                    android:id="@+id/beacon_proximity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_horizontal_default"
+                    android:layout_marginEnd="@dimen/margin_horizontal_default"
+                    android:textSize="14sp"
+                    tools:text="0" />
+            </TableRow>
         </TableLayout>
     </LinearLayout>
 
