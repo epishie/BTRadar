@@ -11,7 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.epishie.btradar.Beacon;
+import com.epishie.btradar.model.Beacon;
 
 import java.util.List;
 

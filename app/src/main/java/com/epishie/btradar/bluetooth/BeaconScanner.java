@@ -1,16 +1,25 @@
 package com.epishie.btradar.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
+import android.os.Build;
 
-import com.epishie.btradar.Beacon;
+import com.epishie.btradar.model.Beacon;
 
 public abstract class BeaconScanner {
 
-    protected static final int SCAN_TIME = 5100;
+    protected static final int SCAN_TIME = 5000;
 
     protected final BluetoothAdapter mAdapter;
     protected final BeaconScannerListener mListener;
     protected boolean mScanning;
+
+    public static BeaconScanner createScanner(BluetoothAdapter adapter, BeaconScannerListener listener) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return new BeaconLollipopScanner(adapter, listener);
+        } else {
+            return new BeaconJellyBeanScanner(adapter, listener);
+        }
+    };
 
     public BeaconScanner(BluetoothAdapter adapter, BeaconScannerListener listener) {
         mAdapter = adapter;

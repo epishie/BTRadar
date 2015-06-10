@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 
-import com.epishie.btradar.Beacon;
+import com.epishie.btradar.model.Beacon;
 import com.epishie.btradar.bluetooth.BeaconService;
 import com.epishie.btradar.view.BeaconView;
 
@@ -67,6 +67,7 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
                     if (!mMonitoring) {
                         return;
                     }
+                    boolean changed = false;
                     for (int i = 0; i < mBeacons.size(); i++) {
                         Beacon beacon = mBeacons.get(i);
                         if (beacon.getLastUpdateTime() == 0) {
@@ -75,7 +76,11 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
                         long elapsedTime = System.currentTimeMillis() - beacon.getLastUpdateTime();
                         if (elapsedTime > 10000L) {
                             mBeacons.set(i, new Beacon.Builder(beacon).create());
+                            changed = true;
                         }
+                    }
+                    if (changed) {
+                        updateViews();
                     }
                     mHandler.postDelayed(this, 1000);
                 }
@@ -104,21 +109,30 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
     }
 
     private void updateViews() {
-        for (BeaconView view : mViewSet) {
-            view.update(mBeacons);
-        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (BeaconView view : mViewSet) {
+                    view.update(mBeacons);
+                }
+            }
+        });
     }
 
     @Override
     public void onStatusUpdate(Beacon beacon) {
         synchronized (this) {
             int i = 0;
+            boolean changed = false;
             for (Beacon b : mBeacons) {
                 if (b.equals(beacon)) {
                     mBeacons.set(i, beacon);
-                    updateViews();
+                    changed = true;
                 }
                 i++;
+            }
+            if (changed) {
+                updateViews();
             }
         }
     }

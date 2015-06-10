@@ -1,6 +1,6 @@
 package com.epishie.btradar.view;
 
-import com.epishie.btradar.Beacon;
+import com.epishie.btradar.model.Beacon;
 
 import java.util.List;
 

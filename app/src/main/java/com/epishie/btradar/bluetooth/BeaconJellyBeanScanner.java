@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.epishie.btradar.Beacon;
+import com.epishie.btradar.model.Beacon;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BeaconJellyBeanScanner extends BeaconScanner {

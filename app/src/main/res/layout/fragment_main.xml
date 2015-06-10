@@ -1,22 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
               android:orientation="vertical"
-              tools:context=".MainActivityFragment">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
-    <android.support.design.widget.TabLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/main_tab"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/data_recycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        app:tabMode="fixed"
-        app:tabGravity="fill" />
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/main_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/margin_horizontal_default"
+        android:paddingEnd="@dimen/margin_horizontal_default"
+        android:paddingTop="@dimen/padding_vertical_list"
+        android:paddingBottom="@dimen/padding_vertical_list" />
 </LinearLayout>

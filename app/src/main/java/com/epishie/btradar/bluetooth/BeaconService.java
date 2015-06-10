@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.epishie.btradar.Beacon;
+import com.epishie.btradar.model.Beacon;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -24,8 +24,7 @@ public class BeaconService extends Service {
         super.onCreate();
 
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        mBeaconScanner = new BeaconLollipopScanner(adapter, mScannerListener);
-        //mBeaconScanner = new BeaconJellyBeanScanner(adapter, mScannerListener);
+        mBeaconScanner = BeaconScanner.createScanner(adapter, mScannerListener);
     }
 
     @Override

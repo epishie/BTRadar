@@ -2,9 +2,6 @@
     <string name="app_name">BT Radar</string>
     <string name="action_settings">Settings</string>
 
-    <string name="tab_data">Data</string>
-    <string name="tab_radar">Radar</string>
-
     <string name="lbl_major">MAJOR</string>
     <string name="lbl_minor">MINOR</string>
     <string name="lbl_rssi">RSSI</string>

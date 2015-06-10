@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.epishie.btradar.Beacon;
+import com.epishie.btradar.model.Beacon;
 import com.epishie.btradar.R;
 import com.epishie.btradar.presenter.MainPresenter;
 
