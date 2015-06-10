@@ -35,6 +35,11 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
             "8492E75F-4FD6-469D-B132-043FE94921D8"
     ));
 
+    /**
+     * Sole constructor.
+     * @param context The Activity Context.
+     * @param savedBeacons The list of persisted beacons.
+     */
     public MainPresenter(Context context, List<Beacon> savedBeacons) {
         mContext = context;
         mViewSet = new HashSet<>();
@@ -52,10 +57,18 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
         }
     }
 
+    /**
+     * Gets the list of beacons.
+     * @return The list of beacons.
+     */
     public List<Beacon> getBeacons() {
         return mBeacons;
     }
 
+    /**
+     * Handles the Activities onStart() event.
+     * Starts the BeaconService and monitoring beacons.
+     */
     public void onActivityStart() {
         Intent intent = new Intent(mContext, BeaconService.class);
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -88,6 +101,10 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
         }
     }
 
+    /**
+     * Handles the Activity's onStop() event.
+     * Stops the BeaconService and monitoring beacons.
+     */
     public void onActivityStop() {
         if (mServiceBound) {
             mServiceBinder.stopMonitoring(ID);
@@ -99,15 +116,26 @@ public class MainPresenter implements BeaconService.BeaconStateListener {
         }
     }
 
+    /**
+     * Adds a BeaconView to the presenter.
+     * @param view The BeaconView to be added.
+     */
     public void registerView(BeaconView view) {
         mViewSet.add(view);
         view.update(mBeacons);
     }
 
+    /**
+     * Removes the BeaconView from the presenter.
+     * @param view The BeaconView to be removed.
+     */
     public void unRegisterView(BeaconView view) {
         mViewSet.remove(view);
     }
 
+    /**
+     * Updates the registered views with beacon data.
+     */
     private void updateViews() {
         mHandler.post(new Runnable() {
             @Override

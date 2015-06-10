@@ -34,6 +34,11 @@ public class BeaconService extends Service {
 
     public class ServiceBinder extends Binder {
 
+        /**
+         * Starts scanning for beacons.
+         * @param id The unique identifier of service consumer.
+         * @param listener The callback for beacon events.
+         */
         public void startMonitoring(String id, BeaconStateListener listener) {
             mListeners.put(id, new WeakReference<>(listener));
             if (mMonitorCount == 0) {
@@ -42,6 +47,10 @@ public class BeaconService extends Service {
             mMonitorCount++;
         }
 
+        /**
+         * Stops scanning for beacons.
+         * @param id The unique identifier of service consumer.
+         */
         public void stopMonitoring(String id) {
             mListeners.remove(id);
             mMonitorCount--;
@@ -63,6 +72,10 @@ public class BeaconService extends Service {
     };
 
     public interface BeaconStateListener {
-       void onStatusUpdate(Beacon beacon);
+        /**
+         * Notify the listener for updated beacon data.
+         * @param beacon The beacon data.
+         */
+        void onStatusUpdate(Beacon beacon);
     }
 }

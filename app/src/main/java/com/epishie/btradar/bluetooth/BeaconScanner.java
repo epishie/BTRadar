@@ -13,6 +13,12 @@ public abstract class BeaconScanner {
     protected final BeaconScannerListener mListener;
     protected boolean mScanning;
 
+    /**
+     * Creates scanner based on SDK version
+     * @param adapter The BluetoothAdapter instance.
+     * @param listener The callback for beacon events.
+     * @return SDK-specific Bluetooth LE Scanner.
+     */
     public static BeaconScanner createScanner(BluetoothAdapter adapter, BeaconScannerListener listener) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return new BeaconLollipopScanner(adapter, listener);
@@ -21,14 +27,27 @@ public abstract class BeaconScanner {
         }
     };
 
-    public BeaconScanner(BluetoothAdapter adapter, BeaconScannerListener listener) {
+    protected BeaconScanner(BluetoothAdapter adapter, BeaconScannerListener listener) {
         mAdapter = adapter;
         mListener = listener;
     }
 
+    /**
+     * Starts the scanner.
+     */
     public abstract void startScan();
+
+    /**
+     * Stops the scanner.
+     */
     public abstract void stopScan();
 
+    /**
+     * Get Beacon from raw data.
+     * @param scanRecord The raw beacon data.
+     * @param rssi The power of the radio signal.
+     * @return
+     */
     protected Beacon getBeacon(byte[] scanRecord, int rssi) {
         int startByte = 2;
         boolean patternFound = false;
@@ -49,7 +68,6 @@ public abstract class BeaconScanner {
             System.arraycopy(scanRecord, startByte + 4, uuidBytes, 0, 16);
             String hexString = bytesToHex(uuidBytes);
 
-            //Here is your UUID
             String uuid = hexString.substring(0, 8) + "-" +
                     hexString.substring(8, 12) + "-" +
                     hexString.substring(12, 16) + "-" +
@@ -57,11 +75,9 @@ public abstract class BeaconScanner {
                     hexString.substring(20, 32);
             builder.setUuid(uuid);
 
-            //Here is your Major value
             int major = (scanRecord[startByte + 20] & 0xff) * 0x100 + (scanRecord[startByte + 21] & 0xff);
             builder.setMajor(major);
 
-            //Here is your Minor value
             int minor = (scanRecord[startByte + 22] & 0xff) * 0x100 + (scanRecord[startByte + 23] & 0xff);
             builder.setMinor(minor);
 
@@ -69,19 +85,6 @@ public abstract class BeaconScanner {
             builder.setTxPower(txPower);
 
             builder.setRssi(rssi);
-            /*
-            double distance = calculateDistance(txPower, rssi);
-            String location;
-            if (distance == -1.0) {
-                location = "Unknown";
-            } else if (distance < 1) {
-                location = "Immediate";
-            } else if (distance < 3) {
-                location = "Near";
-            } else {
-                location = "Far";
-            }
-            */
             return builder.create();
         } else {
             return null;

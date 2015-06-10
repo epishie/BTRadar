@@ -6,5 +6,9 @@ import java.util.List;
 
 public interface BeaconView {
 
+    /**
+     * Updates the beacons with new scan data.
+     * @param beacons the list of beacons
+     */
     void update(List<Beacon> beacons);
 }
